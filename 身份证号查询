@@ -1,0 +1,102 @@
+from tkinter import *
+from lxml import etree
+import tkinter.messagebox
+import time,datetime,requests
+class IDCheckGUI:
+    def __init__(self):
+        self.tk = Tk()
+        self.tk.title("身份证信息校验")
+        self.tk.geometry("800x500")
+        self.tk["bg"] = "lightblue"
+        # 图片
+        self.image = PhotoImage(file=r"E:\pc\py文件\2345截图20191015191354.png")
+        self.Lable_image = Label(self.tk,image=self.image)
+        self.Lable_image.place(x=20,y=10)
+        #校验表单
+        self.lale1 = Label(self.tk,text="请输入身份证号码：",font=("黑体",15), bg="navy", fg="lightblue")
+        self.lale1.place(x=400,y=10)
+        self.varEntry5 = StringVar()
+        self.enter1 = Entry(self.tk,width="20",font=("黑体",20),textvariable=self.varEntry5)
+        self.enter1.place(x=400,y=50)
+        self.button1 = Button(self.tk,text="校验",font=("黑体",13),bg="#eee",fg="navy",command=self.xiao)
+        self.button1.place(x=700,y=50,width="80")
+        self.lale2 = Label(self.tk,text="是否有效：",bg="lightblue",fg="navy",font=("黑体",20))
+        self.lale2.place(x=400,y=150)
+        self.varEntry1 = StringVar()
+        self.lale3 = Label(self.tk,font=("黑体", 20),width="10",textvariable=self.varEntry1)
+        self.lale3.place(x=540, y=150)
+        self.lale4 = Label(self.tk, text="性别：", bg="lightblue", fg="navy", font=("黑体", 20))
+        self.lale4.place(x=400, y=210)
+        self.varEntry2 = StringVar()
+        self.lale5 = Label(self.tk, font=("黑体", 20), width="10",textvariable=self.varEntry2)
+        self.lale5.place(x=540, y=210)
+        self.lale6 = Label(self.tk, text="出生日期：", bg="lightblue", fg="navy", font=("黑体", 20))
+        self.lale6.place(x=400, y=270)
+        self.varEntry3 = StringVar()
+        self.lale7 = Label(self.tk, font=("黑体", 20), width="15",textvariable=self.varEntry3)
+        self.lale7.place(x=540, y=270)
+        self.lale8 = Label(self.tk, text="所在地：", bg="lightblue", fg="navy", font=("黑体", 20))
+        self.lale8.place(x=400, y=330)
+        self.varEntry4 = StringVar()
+        self.lale9 = Label(self.tk, font=("黑体", 20), width="15",textvariable=self.varEntry4)
+        self.lale9.place(x=540, y=330)
+        self.button2 = Button(self.tk,text="关闭",font=("黑体",15),fg="navy",command=self.tk.destroy)
+        self.button2.place(x=540,y=430,width="100")
+    def xiao(self):
+        self.varEntry1.set("")
+        self.varEntry3.set("")
+        self.varEntry2.set("")
+        self.varEntry4.set("")
+        try:
+            n = self.enter1.get()
+            xs = [7, 9, 10, 5, 8, 4, 2, 1, 6, 3, 7, 9, 10, 5, 8, 4, 2]
+            hs = 0
+            for i in range(len(n[:17])):
+                hs += (int(n[:17][i]) * xs[i])
+            ys = hs % 11
+            ys_list = [0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10]
+            ps = [1, 0, "X", 9, 8, 7, 6, 5, 4, 3, 2]
+            if ys in ys_list:
+                ps = ps[ys_list.index(ys)]
+            if n[-1] != str(ps):
+                self.varEntry5.set("")
+                tkinter.messagebox.showinfo('提示', '请输入正确身份证!!')
+            if len(n)!= 18 or time.time()<time.mktime(time.strptime(n[6:14],"%Y%m%d")) or time.mktime(time.strptime(n[6:14],"%Y%m%d"))<0 or n[-1] != str(ps):
+                self.varEntry1.set("否")
+            else:
+                self.varEntry1.set("是")
+                self.varEntry3.set(f"{n[6:14]}")
+                self.varEntry2.set("女") if int(n[-2]) % 2 == 0 else self.varEntry2.set("男")
+                #第一种方法
+                # self.varEntry4.set(f"{self.dizhi(n)[-1]}")
+                #第二种方法
+                self.varEntry4.set(f"{self.dizhi(n[:6])}")
+        except:
+            self.varEntry1.set("否")
+            tkinter.messagebox.showinfo('提示', '格式不正确!!')
+    #第一种方法
+    # def dizhi(self,x):
+    #第二种方法
+    def dizhi(self,x):
+        # 第一种方法：爬虫获取地址
+        # url = "http://qq.ip138.com/idsearch/index.asp?action=idcard&userid="
+        # # 拼接完整地址
+        # url_idnum = url + str(x)
+        # # 获取结果源码
+        # res = requests.get(url_idnum)
+        # # # 处理中文编码问题
+        # html = res.content.decode("utf-8")
+        # html = etree.HTML(html)
+        # # xpath提取内容
+        # addr = html.xpath("//table/tbody/tr/td/p/text()")
+        # return addr
+        #第二种方法
+        s = open("身份证归属地.txt", "r", encoding="utf-8")
+        p = s.readlines()
+        for i in p:
+            if str(x) == i[:6]:
+                return i[6:]
+    def show(self):
+        self.tk.mainloop()
+Id = IDCheckGUI()
+Id.show()
