@@ -1,0 +1,83 @@
+from tkinter import *
+from tkinter import ttk
+from openpyxl import load_workbook
+class Student_statistics():
+    def __init__(self):
+        self.tk = Tk()
+        self.tk.title("学生信息")
+        self.tk.geometry("600x600")
+        #固定窗口
+        self.tk.resizable(0, 0)
+        #创建logo
+        self.tk.iconbitmap("x2.ico")
+        self.image = PhotoImage(file=r"E:\pc\py文件\2345截图20191017143556.png")
+        self.Lable_image = Label(self.tk,image=self.image)
+        self.Lable_image.place(x=0,y=0)
+        self.layout()
+    def layout(self):
+        self.list1 = ["总人数：","男生人数：","女生人数："]
+        for i in range(3):
+            if i == 2:
+                Label(self.tk, fg="blue", text=self.list1[i], font=("黑体", 16)).place(x=i * 180, y=110)
+            else:
+                Label(self.tk,fg="blue",text=self.list1[i],font=("黑体",16)).place(x=i*170,y=110)
+        self.var_1 = StringVar()
+        self.lab_1 = Label(self.tk,font=(15),bg="white",textvariable=self.var_1,width="8",height="2")
+        self.lab_1.place(x=90,y=110)
+        self.var_2 = StringVar()
+        self.lab_2 = Label(self.tk, font=(15), bg="white", textvariable=self.var_2, width="8", height="2")
+        self.lab_2.place(x=280, y=110)
+        self.var_3 = StringVar()
+        self.lab_3 = Label(self.tk, font=(15), bg="white", textvariable=self.var_3, width="8", height="2")
+        self.lab_3.place(x=470, y=110)
+        #创建frame框架
+        self.frame = Frame(self.tk,height="130",width="580",bg="white",relief=GROOVE,bd="3")
+        self.frame.place(x=0,y=160)
+        #创建表格
+        self.columns = ("学号", "姓名","性别","出生日期","手机号码")
+        self.tv = ttk.Treeview(self.frame, height=20, show="headings", columns=self.columns)  # 表格
+        #滚动条
+        self.yscrollbar = Scrollbar(self.frame, orient=VERTICAL, command=self.tv.yview)
+        self.tv.configure(yscrollcommand=self.yscrollbar.set)
+        self.yscrollbar.pack(side=RIGHT, fill=Y)
+        for i in range(len(self.columns)):
+            self.tv.column(self.columns[i], width=115, anchor='center')  # 表示列,不显示
+            self.tv.heading(self.columns[i], text=self.columns[i])  # 显示表头
+            self.tv.pack(side=LEFT, fill=BOTH)
+        #输入数据
+        self.wb = load_workbook('E:\pc\py文件\Book1.xlsx')
+        self.ws = self.wb.active
+        self.cols = []
+        for col in self.ws.iter_cols():
+            self.cols.append(col)
+        self.xue = []
+        self.name = []
+        self.sex = []
+        self.brithday = []
+        self.Cell_phone = []
+        for i in range(37):
+            #将excel里的内容调用出来
+            self.xue.append(self.cols[0][i].value)
+            self.name.append(self.cols[1][i].value)
+            self.sex.append(self.cols[2][i].value)
+            self.brithday.append(self.cols[3][i].value)
+            self.Cell_phone.append(self.cols[4][i].value)
+        self.male = 0
+        self.female = 0
+        self.people = 0
+        for i in range(min(len(self.xue), len(self.name),len(self.sex),len(self.brithday),len(self.Cell_phone))):
+            self.tv.insert('', i, values=(self.xue[i],self.name[i],self.sex[i],self.brithday[i],self.Cell_phone[i]))# 写入数据
+            self.people+=1
+            self.var_1.set(self.people)
+            if self.sex[i] == "男":
+                self.male+=1
+                self.var_2.set(self.male)
+                self.var_3.set(self.female)
+            else:
+                self.female+=1
+                self.var_2.set(self.male)
+                self.var_3.set(self.female)
+    def show(self):
+        self.tk.mainloop()
+A = Student_statistics()
+A.show()
