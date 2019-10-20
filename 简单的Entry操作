@@ -1,0 +1,51 @@
+from tkinter import *
+import tkinter.messagebox
+
+
+class Txt:
+    def __init__(self):
+        self.tk = Tk()
+        self.tk.title("Entry测试")
+        self.tk.geometry("380x300")
+        self.s1 = StringVar()
+        self.e1 = Entry(self.tk, width="20", font=("黑体", 20), highlightcolor="blue", textvariable=self.s1)
+        self.e1.pack(side=TOP)
+        # self.var_2 = StringVar()
+        self.e2 = Entry(self.tk, width="20", font=("黑体", 20))
+        self.e2.pack(side=TOP, fill=Y, expand=YES)
+        self.jie()
+
+    def jie(self):
+
+        # list1 = ["开始插入", "编辑处插入", "结尾插入","获取Text"]
+        bt1 = Button(self.tk, text="开始插入", font=("黑体", 15), command=self.kc)
+        bt1.pack(side=LEFT)
+        bt2 = Button(self.tk, text="编辑插入", font=("黑体", 15), command=self.kc1)
+        bt2.pack(side=LEFT)
+        bt3 = Button(self.tk, text="结尾插入", font=("黑体", 15), command=self.kc2)
+        bt3.pack(side=LEFT)
+        bt4 = Button(self.tk, text="获取Text", font=("黑体", 15), command=self.kc3)
+        bt4.pack(side=LEFT)
+
+    def kc(self):
+        self.e2.insert(0, self.e1.get())
+        self.s1.set("")
+
+    def kc1(self):
+        self.e2.insert(self.e2.index(INSERT), self.e1.get())
+        self.s1.set("")
+
+    def kc2(self):
+        x = len(self.e2.get())-1
+        self.e2.insert(x, self.e1.get())
+        self.s1.set("")
+
+    def kc3(self):
+        tkinter.messagebox.showinfo('提示', self.e2.get())
+
+    def show(self):
+        self.tk.mainloop()
+
+
+A = Txt()
+A.show()
